@@ -89,8 +89,6 @@ Default converters are specified in %(rules)s. Additional rules can override
 existing ones.
         """ % {"rules": DEFAULT_RULES})
 
-    parser.add_argument("tex", help="Main TeX document file",
-                        type=file)
     parser.add_argument("log", help="Compilation log for TeX document",
                         type=file)
     parser.add_argument("--rules", action="append", default=[DEFAULT_RULES],
