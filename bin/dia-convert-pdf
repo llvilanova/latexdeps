@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+SOURCE=$1
+TARGET=$2
+TARGET_EPS=`mktemp`
+
+dia --export $TARGET_EPS -t eps $SOURCE 2>/dev/null
+epstopdf $TARGET_EPS > $TARGET
+rm -f $TARGET_EPS
