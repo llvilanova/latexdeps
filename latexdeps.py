@@ -19,7 +19,7 @@ BIN_PATH = os.path.join(os.path.dirname(__file__), "bin")
 
 def log_get_missing(log):
     res = []
-    cre = re.compile(r"! LaTeX Error: File `(.*)' not found\.")
+    cre = re.compile(r"^.* Error: File `(.*)' not found\.$")
     with open(log, "r") as f:
         for line in f.readlines():
             m = cre.match(line)
