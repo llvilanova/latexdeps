@@ -5,5 +5,5 @@ TARGET=$2
 TARGET_EPS=`mktemp`
 
 dia --export $TARGET_EPS -t eps $SOURCE 2>/dev/null
-epstopdf $TARGET_EPS > $TARGET
+epstopdf $TARGET_EPS --outfile $TARGET
 rm -f $TARGET_EPS
