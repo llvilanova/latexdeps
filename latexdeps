@@ -1,0 +1,4 @@
+#!/bin/sh
+
+BASE=`dirname "$0"`
+PYTHONDONTWRITEBYTECODE=1 "$BASE/latexdeps.py" $@
