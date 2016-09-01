@@ -17,15 +17,21 @@ DEFAULT_RULES = os.path.join(os.path.dirname(__file__), "rules.ini")
 BIN_PATH = os.path.join(os.path.dirname(__file__), "bin")
 
 
-def log_get_missing(log):
-    res = []
-    cre = re.compile(r"^.* Error: File `(.*)' not found\.$")
+def log_get_deps(log):
     with open(log, "r") as f:
-        for line in f.readlines():
-            m = cre.match(line)
-            if m is None:
-                continue
-            res.append(m.group(1))
+        text = f.read()
+    # LaTeX can break lines in the middle of a word
+    text = text.replace("\n", "")
+
+    pattern_missing = r"Error:\s+File\s+`(?P<f1>[^']+)'\s+not\s+found\."
+    pattern_using = r"<use\s+(?P<f2>[^>]+)>"
+    cre = re.compile(r"(%s)|(%s)" % (pattern_missing, pattern_using))
+
+    res = []
+    for match in cre.finditer(text):
+        for target in match.groupdict().values():
+            if target is not None:
+                res.append(target)
     return res
 
 
@@ -64,7 +70,7 @@ def apply_converters(path, converters, default_suffix):
 
     for name, conv in converters.items():
         for suffix in suffixes:
-            target_path =  path + suffix
+            target_path = path + suffix
             m = conv["target"].match(target_path)
             if m is not None:
                 break
@@ -76,6 +82,9 @@ def apply_converters(path, converters, default_suffix):
         src = conv["source"].format(**match_dict)
 
         if not os.path.exists(src):
+            continue
+
+        if os.path.exists(target_path) and os.path.getmtime(src) < os.path.getmtime(target_path):
             continue
 
         fdict = {"source": src, "target": target_path}
@@ -115,14 +124,14 @@ existing ones.
     args = parser.parse_args(argv)
 
     log = args.log.name
-    missing = log_get_missing(log)
+    deps = log_get_deps(log)
 
-    if len(missing) == 0:
+    if len(deps) == 0:
         return
 
     converters = search_converters(args.rules)
 
-    for path in missing:
+    for path in deps:
         apply_converters(path, converters, args.suffix)
 
 
