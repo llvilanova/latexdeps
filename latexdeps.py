@@ -68,14 +68,15 @@ def apply_converters(path, converters, default_suffix):
         if m is None:
             continue
 
-        src = conv["target"].sub(conv["source"], target_path)
+        match_dict = dict(m.groupdict())
+
+        src = conv["source"].format(**match_dict)
 
         if not os.path.exists(src):
             continue
 
         fdict = {"source": src, "target": target_path}
-        for k, v in m.groupdict().items():
-            fdict[k] = v
+        fdict.update(match_dict)
 
         message = conv["message"].format(**fdict)
         message += " [%s]" % name
