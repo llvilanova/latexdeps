@@ -73,7 +73,11 @@ def apply_converters(path, converters, default_suffix):
         if not os.path.exists(src):
             continue
 
-        message = conv["message"].format(source=src, target=target_path)
+        fdict = {"source": src, "target": target_path}
+        for k, v in m.groupdict().items():
+            fdict[k] = v
+
+        message = conv["message"].format(**fdict)
         message += " [%s]" % name
         print(message)
 
@@ -82,8 +86,7 @@ def apply_converters(path, converters, default_suffix):
             PATH = ":" + PATH
         PATH = BIN_PATH + PATH
 
-        command = [c.format(source=src, target=target_path)
-                   for c in conv["command"]]
+        command = [c.format(**fdict) for c in conv["command"]]
         subprocess.check_call(command, env={"PATH": PATH})
         break
 
