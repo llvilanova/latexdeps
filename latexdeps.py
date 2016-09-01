@@ -44,6 +44,9 @@ def search_converters(path):
         if "target" not in conv:
             continue
         conv["target"] = re.compile(conv["target"])
+        if any(name in ["target", "source"]
+               for name in conv["target"].groupindex.keys()):
+            continue
         if "command" not in conv:
             continue
         conv["command"] = json.loads(conv["command"])
