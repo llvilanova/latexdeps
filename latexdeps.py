@@ -57,11 +57,11 @@ def search_converters(path):
 def apply_converters(path, converters, default_suffix):
     suffixes = [""]
     if default_suffix is not None:
-        suffixes.append(default_suffix)
+        suffixes.append("." + default_suffix)
 
     for name, conv in converters.items():
         for suffix in suffixes:
-            target_path =  path + "." + suffix
+            target_path =  path + suffix
             m = conv["target"].match(target_path)
             if m is not None:
                 break
