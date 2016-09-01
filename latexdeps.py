@@ -54,18 +54,26 @@ def search_converters(path):
     return converters
 
 
-def apply_converters(path, converters):
+def apply_converters(path, converters, default_suffix):
+    suffixes = [""]
+    if default_suffix is not None:
+        suffixes.append(default_suffix)
+
     for name, conv in converters.items():
-        m = conv["target"].match(path)
+        for suffix in suffixes:
+            target_path =  path + "." + suffix
+            m = conv["target"].match(target_path)
+            if m is not None:
+                break
         if m is None:
             continue
 
-        src = conv["target"].sub(conv["source"], path)
+        src = conv["target"].sub(conv["source"], target_path)
 
         if not os.path.exists(src):
             continue
 
-        message = conv["message"].format(source=src, target=path)
+        message = conv["message"].format(source=src, target=target_path)
         message += " [%s]" % name
         print(message)
 
@@ -74,7 +82,7 @@ def apply_converters(path, converters):
             PATH = ":" + PATH
         PATH = BIN_PATH + PATH
 
-        command = [c.format(source=src, target=path)
+        command = [c.format(source=src, target=target_path)
                    for c in conv["command"]]
         subprocess.check_call(command, env={"PATH": PATH})
         break
@@ -94,6 +102,8 @@ existing ones.
     parser.add_argument("--rules", action="append", default=[DEFAULT_RULES],
                         type=file,
                         help="Additional rules file")
+    parser.add_argument("--suffix",
+                        help="Implicit suffix for target files")
 
     args = parser.parse_args(argv)
 
@@ -106,7 +116,7 @@ existing ones.
     converters = search_converters(args.rules)
 
     for path in missing:
-        apply_converters(path, converters)
+        apply_converters(path, converters, args.suffix)
 
 
 if __name__ == "__main__":
