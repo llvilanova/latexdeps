@@ -2,8 +2,15 @@
 
 SOURCE=$1
 TARGET=$2
+LAYERS=$3
 TARGET_EPS=`mktemp`
 
-dia --export $TARGET_EPS -t eps $SOURCE 2>/dev/null
+if [ -n "$LAYERS" ]; then
+    DIA_LAYERS="-L $LAYERS"
+else
+    DIA_LAYERS=""
+fi
+
+dia --export $TARGET_EPS -t eps $DIA_LAYERS $SOURCE 2>/dev/null
 epstopdf $TARGET_EPS --outfile $TARGET
 rm -f $TARGET_EPS
