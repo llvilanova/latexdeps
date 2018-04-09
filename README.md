@@ -1,7 +1,8 @@
 # latexdeps
 
 *Latexdeps* can automatically produce missing files (identified in a TeX log
-file) from other existing files.
+file) from other existing files. It is best used in combination with
+[latexbuild](https://github.com/llvilanova/latexbuild).
 
 This can be used, for example, to take a source file (e.g., SVG) and produce a
 PDF file that will be included in your final document.  This way, you don't need
